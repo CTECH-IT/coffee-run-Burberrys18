@@ -13,8 +13,28 @@
         if (this.$element.length == 0) {
             throw new Error('Could not find the element with selector: ' + selector);
         }
-
     }
+
+    Checklist.prototype.addRow = function (coffeeOrder) {
+        this.removeRow(coffeeOrder.emailAddress);
+
+        var rowElement = new Row(coffeeOrder);
+        this.$element.append(rowElement.$element);
+    }
+
+    Checklist.prototype.removeRow = function (email) {
+        this.$element
+            .find('[value="' + email + '"]')
+            .closest('[data-coffee-order="checkbox"]')
+            .remove();
+    };
+
+    Checklist.prototype.addClickHandler = function (func) {
+        this.$element.on('click', 'input', function (event) {
+            var email = event.target.value;
+            this.removeRow(email);
+        }.bind(this));
+    };
 
     function Row(coffeeOrder) {
 
@@ -36,6 +56,12 @@
         description += coffeeOrder.coffee + ', ';
         description += ' (' + coffeeOrder.emailAddress + ')';
         description += ' [' + coffeeOrder.strength + 'x]';
+
+        $label.append($checkbox);
+        $label.append(description);
+        $div.append($label);
+
+        this.$element = $div;
     }
 
     App.Checklist = Checklist;
